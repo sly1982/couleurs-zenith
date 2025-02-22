@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH PHARMA - Code Secret</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            color: white;
+            font-family: monospace;
+            text-align: center;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        #header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 10;
+        }
+        #subtext {
+            position: absolute;
+            top: 60px;
+            width: 100%;
+            font-size: 18px;
+            text-align: center;
+            z-index: 10;
+        }
+        #keypad {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            gap: 10px;
+            z-index: 10;
+        }
+        .key {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 100, 255, 0.8);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid white;
+        }
+        .key:hover {
+            background: rgba(0, 150, 255, 1);
+        }
+        #code-display {
+            position: absolute;
+            top: 280px;
+            width: 100%;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="header">ZENITH PHARMA</div>
+    <div id="subtext">Insérez le code secret pour passer à l'étape supérieure</div>
+    <div id="keypad"></div>
+    <div id="code-display"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const columns = Math.floor(canvas.width / 20);
+        const drops = Array(columns).fill(0);
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00aaff';
+            ctx.font = '16px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = Math.floor(Math.random() * 10);
+                ctx.fillText(text, i * 20, drops[i] * 20);
+                drops[i] = drops[i] * 20 > canvas.height && Math.random() > 0.95 ? 0 : drops[i] + 1;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        const keypad = document.getElementById('keypad');
+        const codeDisplay = document.getElementById('code-display');
+        let enteredCode = '';
+        const correctCode = '789';
+        
+        for (let i = 1; i <= 9; i++) {
+            const key = document.createElement('div');
+            key.classList.add('key');
+            key.textContent = i;
+            key.addEventListener('click', () => {
+                if (enteredCode.length < 3) {
+                    enteredCode += i;
+                    codeDisplay.textContent = enteredCode;
+                }
+                if (enteredCode.length === 3) {
+                    if (enteredCode === correctCode) {
+                        codeDisplay.innerHTML = '<span style="color: green; font-weight: bold;">CORRECT</span>';
+                    } else {
+                        codeDisplay.innerHTML = '<span style="color: red; font-weight: bold;">INCORRECT</span>';
+                        setTimeout(() => {
+                            enteredCode = '';
+                            codeDisplay.textContent = '';
+                        }, 1000);
+                    }
+                }
+            });
+            keypad.appendChild(key);
+        }
+    </script>
+</body>
+</html>
